@@ -88,7 +88,7 @@
 <meta property="og:description" content="最近工作上涉及到些时区概念，在同事交流过程中顺便总结了下。 时区下面用如下系统结构介绍下时区概念：  1、现在前端WEB需要获取到当前时间:new Date() ，new Date()创建时间代表当前时刻，是不涉及到任何时区问题的，Date类型的API中也没有任何和时区进行关联的方法，Date可以代表对时间戳long的一个封装，表示一个瞬时时刻，Date.getTime()方法就可以获取到当前封装">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://blog.reactor.top/2018/01/25/时区总结/images/时区.jpg">
-<meta property="og:updated_time" content="2018-01-25T14:05:26.437Z">
+<meta property="og:updated_time" content="2018-01-25T15:01:30.885Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="时区总结">
 <meta name="twitter:description" content="最近工作上涉及到些时区概念，在同事交流过程中顺便总结了下。 时区下面用如下系统结构介绍下时区概念：  1、现在前端WEB需要获取到当前时间:new Date() ，new Date()创建时间代表当前时刻，是不涉及到任何时区问题的，Date类型的API中也没有任何和时区进行关联的方法，Date可以代表对时间戳long的一个封装，表示一个瞬时时刻，Date.getTime()方法就可以获取到当前封装">
@@ -401,7 +401,7 @@
 <p>3、服务A接收到2018-01-03 16:02:04.591这个代表时间的字符串，需要将其转成成Date类型，它就需要知道这个时间字符串到底代表那个时区的，当然如果服务A本身就是运行在东八区就不需要指定时区(默认和系统时区保持一致)，否则解析的时候就需要指定具体的时区：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">String timeStr = <span class="string">"2018-01-03 16:02:04.591"</span>;</span><br><span class="line">SimpleDateFormat dateFormat2 = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd HH:mm:ss.SSS"</span>);</span><br><span class="line">dateFormat2.setTimeZone(TimeZone.getTimeZone(<span class="string">"GMT+8:00"</span>));</span><br><span class="line">Date date2 = dateFormat2.parse(timeStr);</span><br><span class="line">System.out.println(date2.getTime());</span><br><span class="line"></span><br><span class="line">输出：<span class="number">1514966524591</span>(和WEB传入的Date的时间戳一致，即传递过程正常)</span><br></pre></td></tr></table></figure>
 <p>如果WEB传递过来的是UTF时区时间：2018-01-03 08:02:04.591，服务A解析如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">String timeStr = <span class="string">"2018-01-03 08:02:04.591"</span>;</span><br><span class="line">SimpleDateFormat dateFormat3 = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd HH:mm:ss.SSS"</span>);</span><br><span class="line">dateFormat3.setTimeZone(TimeZone.getTimeZone(<span class="string">"GMT"</span>));<span class="comment">//指定用UTF时区解析时间</span></span><br><span class="line">Date date3 = dateFormat3.parse(timeStr);</span><br><span class="line">System.out.println(date3.getTime());</span><br><span class="line"></span><br><span class="line">输出：<span class="number">1514966524591</span>(和WEB传入的Date的时间戳一致，即传递过程正常)</span><br></pre></td></tr></table></figure></p>
-<p>总结：如果系统间时区不一致，或者约定传递时间用UTF时间格式，就要保证两个方面：<br>        1、传递方在将Date解析成字符串时指定时区为UTF<br>        2、接收方在接收到时间字符串进行解析成Date类型时，也需要指定时区为UTF<br>        3、如果不指定都会采用系统默认时区，可能就会存在问题</p>
+<p>总结：如果系统间时区不一致，或者约定传递时间用UTF时间格式，就要保证两个方面：<br>    1、传递方在将Date解析成字符串时指定时区为UTF<br>    2、接收方在接收到时间字符串进行解析成Date类型时，也需要指定时区为UTF<br>    3、如果不指定都会采用系统默认时区，可能就会存在问题</p>
 <p>4、服务A正常解析出WEB传递过来的时间后，写入到数据库表中的一个字段中，如果字段类型是datetime，插入数据是不受任何时区影响的(包括服务本地时区、MySQL运行服务器时区及MySQL自己时区)，这就是Date代表的时间至少时间戳的封装，相当于一个long型，时间戳是没有时区概念的。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">查看数据库时区：</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">"%time_zone%"</span>;</span><br><span class="line">+<span class="comment">------------------+--------+</span></span><br><span class="line">| Variable_name  | Value |</span><br><span class="line">+<span class="comment">------------------+--------+</span></span><br><span class="line">| system_time_zone | CST  |</span><br><span class="line">| time_zone    | SYSTEM |</span><br><span class="line">+<span class="comment">------------------+--------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 <p>time_zone说明mysql使用system的时区，system_time_zone说明system使用CST时区，CST时区在这里就代表的是北京东八区时区、</p>
@@ -498,6 +498,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2018/01/26/Disruptor之概览/" rel="prev" title="Disruptor之概览">
+                Disruptor之概览 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -573,7 +577,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -584,7 +588,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">2</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -595,7 +599,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
