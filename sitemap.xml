@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://blog.reactor.top/about/index.html</loc>
+    
+    <lastmod>2018-01-25T15:33:41.120Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://blog.reactor.top/2018/01/26/Disruptor%E4%B9%8B%E6%A6%82%E8%A7%88/</loc>
     
     <lastmod>2018-01-25T15:10:54.393Z</lastmod>
@@ -33,20 +40,6 @@
     <loc>http://blog.reactor.top/tags/index.html</loc>
     
     <lastmod>2018-01-25T06:53:36.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://blog.reactor.top/about/index-1.html</loc>
-    
-    <lastmod>2018-01-25T06:02:34.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://blog.reactor.top/about/index.html</loc>
-    
-    <lastmod>2018-01-25T05:30:58.000Z</lastmod>
     
   </url>
   
