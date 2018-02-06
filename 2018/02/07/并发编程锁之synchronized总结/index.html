@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="并发,synchronized,Lock,JVM," />
+  <meta name="keywords" content="并发,Lock,synchronized,JVM," />
 
 
 
@@ -80,7 +80,7 @@
 
 
 <meta name="description" content="锁synchronized并发编程中数据同步需要依赖锁进行控制，上篇博文通过ReentrantLock源码分析也对Lock实现锁机制的大致原理有了一个了解，Lock主要是通过编码的方式实现锁，其核心就是：CAS+循环，CAS原子操作需要依赖底层硬件层特殊的CPU指令。这节我们来看下Java中另一种非常常见的实现同步的方式：synchronized。synchronized主要通过底层JVM进行实现">
-<meta name="keywords" content="并发,synchronized,Lock,JVM">
+<meta name="keywords" content="并发,Lock,synchronized,JVM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="并发编程锁之synchronized总结">
 <meta property="og:url" content="http://blog.reactor.top/2018/02/07/并发编程锁之synchronized总结/index.html">
@@ -95,7 +95,7 @@
 <meta property="og:image" content="http://blog.reactor.top/2018/02/07/并发编程锁之synchronized总结/images/1517840236294.png">
 <meta property="og:image" content="http://blog.reactor.top/2018/02/07/并发编程锁之synchronized总结/images/1517900250327.png">
 <meta property="og:image" content="http://blog.reactor.top/2018/02/07/并发编程锁之synchronized总结/images/1517920072719.png">
-<meta property="og:updated_time" content="2018-02-06T16:38:45.855Z">
+<meta property="og:updated_time" content="2018-02-06T16:49:23.628Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="并发编程锁之synchronized总结">
 <meta name="twitter:description" content="锁synchronized并发编程中数据同步需要依赖锁进行控制，上篇博文通过ReentrantLock源码分析也对Lock实现锁机制的大致原理有了一个了解，Lock主要是通过编码的方式实现锁，其核心就是：CAS+循环，CAS原子操作需要依赖底层硬件层特殊的CPU指令。这节我们来看下Java中另一种非常常见的实现同步的方式：synchronized。synchronized主要通过底层JVM进行实现">
@@ -388,8 +388,8 @@
 
           
             <span class="post-meta-divider">|</span>
-            <span class="page-pv"><i class="fa fa-file-o">本文总阅读量</i>
-            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
             </span>
           
 
@@ -438,7 +438,7 @@
 <p>注意：自旋在多处理器上才有意义，这理解也很简单：自旋是不会释放CPU资源的，在单处理器上如果某个线程处于自旋状态，也就意味着没有其它线程处于同时处于运行状态，也就在自旋期间不可能存在线程释放锁资源。所以，单处理上自旋是没有意义的，不过现在服务器一般不可能运行在单处理器上。</p>
 </blockquote>
 <p>​    5、如何膨胀为重量级锁呢？<br>​            a.步骤4中在自旋模式下依然无法获取锁，即会膨胀为重量锁<br>​            b.首先当前线程会修改Obj对象头中锁标志位，由代表轻量级锁的00修改成代表重量级锁的10，然后当前线程进入休眠模式，当然了再进入休眠模式之前还会进行一些操作，这里先这么理解，后面分析重量锁时具体流程再分析说明<br>​            c.当持有Obj对象偏向锁的线程执行完同步方法后，会通过一次CAS原子操作将对象头中的MarkWord由当前栈帧中的Lock Record进行重置回之前内容，如果重置成功，则释放锁完成；但是，根据上步骤我们知道，由于当前已膨胀为重量级锁，导致Obj对象的MarkWord中的锁标志位已被修改，CAS重置对象头操作会失败，这时就会感知到：在偏向锁运行期间，存在了其它线程竞争锁资源情况，当前锁已被膨胀为重量级锁，所以，在释放锁得到同时，会唤醒应等待该锁导致休眠的线程</p>
-<p>轻量级锁是不支持”并发”，遇到”并发”就要膨胀为重量级锁。可能你会疑问：锁就是用来解决并发下资源同步问题，轻量级锁对“并发”都不支持要它能干什么呢？注意：次并发并非彼并发，这里的并发是带有引号的，即不存在锁竞争的并发。</p>
+<p>轻量级锁是不支持”并发”，遇到”并发”就要膨胀为重量级锁。可能你会疑问：锁就是用来解决并发下资源同步问题，轻量级锁对“并发”都不支持要它能干什么呢？注意：此并发并非彼并发，这里的并发是带有引号的，即不存在锁竞争的并发。</p>
 <p>轻量级锁在申请锁资源时通过一个CAS操作即可获取，释放锁资源时也是通过一个CAS操作即可完成，CAS是一种乐观锁的实现机制，其开销显然要比互斥开销小很多，这就是轻量级锁提升性能的核心所在。但是，轻量级锁只是对无锁竞争并发场景下的一个优化，如果锁竞争激烈，轻量级锁不但有互斥开销，还要多一次CAS开销，这是轻量级锁比重量级锁性能更差。所以，JVM检测到锁竞争时自动膨胀为重量级锁原因就在于此。</p>
 <h5 id="偏向锁"><a href="#偏向锁" class="headerlink" title="偏向锁"></a>偏向锁</h5><p>轻量级锁优化了并发情况下串行化访问的场景，即下面示意图中的场景一，现在有个更极端情况：假如一段时间间隔内同步方法只会被同一个线程多次访问，即下面示意图中的场景二，从总体看同步方法是在单线程环境中运行。如果使用轻量级锁，每次调用同步方法要通过一次CAS操作申请锁，执行完后同样通过一次CAS操作释放锁，如下面场景二产生了7次调用共要执行14次CAS操作，还不包括其它开销。JVM工程师们对场景二进一步进行优化：只会在线程第一次调用同步方法时获取锁，执行完成后不去释放，后面该线程再次进入时不需要再次获取锁，直接进入，只有当其它线程申请锁时才会释放，因此，同样的场景二，偏向锁只会产生2次CAS操作。</p>
 <p><img src="images/1517823994203.png" alt="1517823994203"></p>
@@ -560,9 +560,9 @@
           
             <a href="/tags/并发/" rel="tag"># 并发</a>
           
-            <a href="/tags/synchronized/" rel="tag"># synchronized</a>
-          
             <a href="/tags/Lock/" rel="tag"># Lock</a>
+          
+            <a href="/tags/synchronized/" rel="tag"># synchronized</a>
           
             <a href="/tags/JVM/" rel="tag"># JVM</a>
           
@@ -772,19 +772,7 @@
   <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
   
-    <span class="site-uv">
-      <i class="fa fa-user">本站访客数</i>
-      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
-      人次
-    </span>
-  
 
-  
-    <span class="site-pv">
-      <i class="fa fa-eye">本站总访问量</i>
-      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
-      次
-    </span>
   
 </div>
 
