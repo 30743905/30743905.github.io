@@ -1,1 +1,1 @@
-http://blog.reactor.top/2018/01/31/并发编程锁之ReentrantLock总结/
+http://blog.reactor.top/2018/02/07/并发编程锁之synchronized总结/
